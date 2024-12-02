@@ -7,8 +7,46 @@ import streamlit as st
 from rag_app import load_webpage, split_documents, create_vectorstore, setup_rag_chain
 
 def main():
-    st.title("Web Page Content Query System")
-    st.write("Enter a URL to analyze and ask questions about its content")
+    # Set page config and custom CSS
+    st.set_page_config(
+        page_title="Web Page Content Query System",
+        page_icon="🔍",
+    )
+    
+    # Custom CSS for styling
+    st.markdown("""
+        <style>
+        .stButton>button {
+            color: white;
+            background-color: #0e4c92;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+        }
+        .clear-button>button {
+            background-color: #d32f2f !important;
+        }
+        .success-message {
+            color: #2e7d32;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: #e8f5e9;
+        }
+        .error-message {
+            color: #d32f2f;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: #ffebee;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.title("🔍 Web Page Content Query System")
+    st.markdown("""
+        <div style='background-color: #e3f2fd; padding: 1rem; border-radius: 4px;'>
+        Enter a URL to analyze and ask questions about its content
+        </div>
+    """, unsafe_allow_html=True)
 
     # Initialize session state
     if 'vectorstore' not in st.session_state:
@@ -30,9 +68,9 @@ def main():
                     st.session_state.vectorstore = create_vectorstore(splits)
                     st.session_state.rag_chain = setup_rag_chain(st.session_state.vectorstore)
                     st.session_state.current_url = url
-                    st.success("Webpage loaded successfully!")
+                    st.markdown("<div class='success-message'>Webpage loaded successfully! ✅</div>", unsafe_allow_html=True)
                 else:
-                    st.error("Failed to load webpage")
+                    st.markdown("<div class='error-message'>Failed to load webpage ❌</div>", unsafe_allow_html=True)
 
     # Question input section
     if st.session_state.vectorstore is not None:
@@ -50,7 +88,8 @@ def main():
                 except Exception as e:
                     st.error(f"Error generating answer: {e}")
 
-        if st.button("Clear Current Webpage"):
+        if st.button("Clear Current Webpage", key="clear-button", help="Reset the application state"):
+            st.markdown("<style>.clear-button>button { background-color: #d32f2f !important; }</style>", unsafe_allow_html=True)
             st.session_state.vectorstore = None
             st.session_state.rag_chain = None
             st.session_state.current_url = ""
