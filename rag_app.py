@@ -32,17 +32,25 @@ def load_webpage(url: str) -> List:
 
 def split_documents(documents: List) -> List:
     """Split documents into chunks"""
-    # Initialize text splitter
-    # Split documents
-    # Return splits
-    pass
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200,
+        length_function=len,
+    )
+    splits = text_splitter.split_documents(documents)
+    print(f"\nSplit documents into {len(splits)} chunks")
+    return splits
 
 def create_vectorstore(splits: List) -> Chroma:
     """Create and populate vector store"""
-    # Initialize embeddings
-    # Create vector store
-    # Return vectorstore
-    pass
+    embeddings = OpenAIEmbeddings()
+    vectorstore = Chroma.from_documents(
+        documents=splits,
+        embedding=embeddings,
+        persist_directory="./chroma_db"
+    )
+    print("\nCreated vector store with embeddings")
+    return vectorstore
 
 def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
     """Set up the RAG chain for querying"""
@@ -63,6 +71,9 @@ def main():
             break
             
         documents = load_webpage(url)
+        if documents:
+            splits = split_documents(documents)
+            vectorstore = create_vectorstore(splits)
 
 if __name__ == "__main__":
     main()
