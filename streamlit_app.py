@@ -44,7 +44,7 @@ def main():
     st.title("🔍 Web Page Content Query System")
     st.markdown("""
         <div style='background-color: #e3f2fd; padding: 1rem; border-radius: 4px;'>
-        Enter a URL to analyze and ask questions about its content
+            <span style='color: #000000;'>Enter a URL to analyze and ask questions about its content</span>
         </div>
     """, unsafe_allow_html=True)
 
