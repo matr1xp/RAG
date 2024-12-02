@@ -55,25 +55,59 @@ def create_vectorstore(splits: List) -> Chroma:
 def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
     """Set up the RAG chain for querying"""
     # Initialize retriever
-    # Set up prompt
-    # Create and return chain
-    pass
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    
+    # Get the default RAG prompt
+    prompt = hub.pull("rlm/rag-prompt")
+    
+    # Initialize the LLM
+    llm = ChatOpenAI(model_name="gpt-4", temperature=0)
+    
+    # Create the RAG chain
+    rag_chain = (
+        {"context": retriever, "question": RunnablePassthrough()} 
+        | prompt 
+        | llm 
+        | StrOutputParser()
+    )
+    
+    return rag_chain
 
 def main():
     """Main application loop"""
     print("Web Page Content Loader")
+    vectorstore = None
+    rag_chain = None
     
     while True:
-        url = input("\nEnter the URL of the webpage to analyze (or 'quit' to exit): ").strip()
-        
-        if url.lower() == 'quit':
-            print("Exiting application.")
-            break
+        if not vectorstore:
+            url = input("\nEnter the URL of the webpage to analyze (or 'quit' to exit): ").strip()
             
-        documents = load_webpage(url)
-        if documents:
-            splits = split_documents(documents)
-            vectorstore = create_vectorstore(splits)
+            if url.lower() == 'quit':
+                print("Exiting application.")
+                break
+                
+            documents = load_webpage(url)
+            if documents:
+                splits = split_documents(documents)
+                vectorstore = create_vectorstore(splits)
+                rag_chain = setup_rag_chain(vectorstore)
+                print("\nReady for questions! (Type 'new' for a new webpage or 'quit' to exit)")
+        else:
+            question = input("\nEnter your question: ").strip()
+            
+            if question.lower() == 'quit':
+                print("Exiting application.")
+                break
+            elif question.lower() == 'new':
+                vectorstore = None
+                continue
+            
+            try:
+                answer = rag_chain.invoke(question)
+                print("\nAnswer:", answer)
+            except Exception as e:
+                print(f"Error generating answer: {e}")
 
 if __name__ == "__main__":
     main()
