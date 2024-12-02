@@ -17,10 +17,18 @@ from langchain_chroma import Chroma
 
 def load_webpage(url: str) -> List:
     """Load and parse webpage content"""
-    # Initialize WebBaseLoader
-    # Load webpage
-    # Return documents
-    pass
+    try:
+        loader = WebBaseLoader(url)
+        documents = loader.load()
+        print("\nWebpage content:")
+        print("-" * 50)
+        for doc in documents:
+            print(doc.page_content)
+        print("-" * 50)
+        return documents
+    except Exception as e:
+        print(f"Error loading webpage: {e}")
+        return []
 
 def split_documents(documents: List) -> List:
     """Split documents into chunks"""
@@ -45,11 +53,16 @@ def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
 
 def main():
     """Main application loop"""
-    # Get URL from user
-    # Load and process webpage
-    # Create RAG chain
-    # Interactive query loop
-    pass
+    print("Web Page Content Loader")
+    
+    while True:
+        url = input("\nEnter the URL of the webpage to analyze (or 'quit' to exit): ").strip()
+        
+        if url.lower() == 'quit':
+            print("Exiting application.")
+            break
+            
+        documents = load_webpage(url)
 
 if __name__ == "__main__":
     main()
