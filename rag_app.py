@@ -12,8 +12,10 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_chroma import Chroma
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.llms import Ollama
+
 
 def load_webpage(url: str) -> List:
     """Load and parse webpage content"""
@@ -43,13 +45,13 @@ def split_documents(documents: List) -> List:
 
 def create_vectorstore(splits: List) -> Chroma:
     """Create and populate vector store"""
-    embeddings = OpenAIEmbeddings()
+    embeddings = OllamaEmbeddings(model="llama3.1")  # You can use other models too
     vectorstore = Chroma.from_documents(
         documents=splits,
         embedding=embeddings,
         persist_directory="./chroma_db"
     )
-    print("\nCreated vector store with embeddings")
+    print("\nCreated vector store with Ollama embeddings")
     return vectorstore
 
 def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
@@ -59,18 +61,18 @@ def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
     
     # Get the default RAG prompt
     prompt = hub.pull("rlm/rag-prompt")
-    
-    # Initialize the LLM
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0)
-    
+
+    # Initialize Ollama LLM
+    llm = Ollama(model="llama3.1")  # You can use other models like "mistral" or "gemma"
+
     # Create the RAG chain
     rag_chain = (
-        {"context": retriever, "question": RunnablePassthrough()} 
-        | prompt 
-        | llm 
-        | StrOutputParser()
+            {"context": retriever, "question": RunnablePassthrough()}
+            | prompt
+            | llm
+            | StrOutputParser()
     )
-    
+
     return rag_chain
 
 def main():

@@ -93,7 +93,7 @@ def main():
             st.session_state.vectorstore = None
             st.session_state.rag_chain = None
             st.session_state.current_url = ""
-            st.experimental_rerun()
+            st.rerun()
 
 if __name__ == "__main__":
     main()
