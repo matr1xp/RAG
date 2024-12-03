@@ -6,17 +6,17 @@ A RAG (Retrieval-Augmented Generation) application that allows users to query we
 
 - Load and analyze any web page content
 - Split content into manageable chunks for processing
-- Generate embeddings using OpenAI's embedding model
+- Generate embeddings using Ollama's local embedding model
 - Store and retrieve relevant content using Chroma vector database
 - Query content using natural language questions
-- Get AI-generated answers using GPT-4
+- Get AI-generated answers using local Ollama models
 - Interactive web interface with Streamlit
 - Colorful and intuitive UI design
 
 ## Technologies Used
 
 - **LangChain v0.2+**: Framework for building LLM applications
-- **OpenAI GPT-4**: Large Language Model for generating responses
+- **Ollama**: Local Large Language Model for generating responses
 - **Chroma**: Vector database for storing and retrieving embeddings
 - **Streamlit**: Web interface framework
 - **BeautifulSoup4**: Web scraping and HTML parsing
@@ -25,7 +25,7 @@ A RAG (Retrieval-Augmented Generation) application that allows users to query we
 ## Prerequisites
 
 - Python 3.x installed
-- OpenAI API key
+- Ollama installed and running locally
 - Git (for cloning the repository)
 
 ## Installation
@@ -41,9 +41,9 @@ cd <repository-name>
 pip install -r requirements.txt
 ```
 
-3. Set up your OpenAI API key:
+3. Ensure Ollama is running locally with the required models:
 ```bash
-export OPENAI_API_KEY='your-api-key-here'
+ollama pull llama3.1
 ```
 
 ## Usage
@@ -85,10 +85,10 @@ The web interface provides:
 
 1. **Web Page Loading**: The application fetches and parses web page content using WebBaseLoader
 2. **Content Processing**: Text is split into chunks using RecursiveCharacterTextSplitter
-3. **Embedding Generation**: Content chunks are converted to embeddings using OpenAI's embedding model
+3. **Embedding Generation**: Content chunks are converted to embeddings using Ollama's local embedding model
 4. **Vector Storage**: Embeddings are stored in a Chroma vector database
 5. **Query Processing**: User questions trigger relevant content retrieval
-6. **Answer Generation**: GPT-4 generates answers based on retrieved content and user questions
+6. **Answer Generation**: Ollama generates answers based on retrieved content and user questions
 
 ## Error Handling
 
