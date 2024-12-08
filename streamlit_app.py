@@ -42,10 +42,23 @@ def main():
 
     # Check if model has changed
     if model != st.session_state.current_model:
-        # Clear the current state and Chroma DB
+        # Clear the current state and Chroma collection
         if os.path.exists("./chroma_db"):
-            import shutil
-            shutil.rmtree("./chroma_db")
+            from chromadb.config import Settings
+            import chromadb
+            client = chromadb.PersistentClient(
+                path="./chroma_db",
+                settings=Settings(
+                    anonymized_telemetry=False,
+                    allow_reset=True,
+                    is_persistent=True
+                )
+            )
+            try:
+                client.delete_collection(f"webpage_collection_{st.session_state.current_model}")
+            except:
+                pass  # Collection might not exist
+            
         st.session_state.vectorstore = None
         st.session_state.rag_chain = None
         st.session_state.current_url = ""
