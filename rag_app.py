@@ -5,6 +5,7 @@ Simple RAG application using LangChain v0.2 that allows querying web pages.
 
 import os
 import sys
+import argparse
 from typing import List, Dict
 
 from langchain import hub
@@ -43,9 +44,9 @@ def split_documents(documents: List) -> List:
     print(f"\nSplit documents into {len(splits)} chunks")
     return splits
 
-def create_vectorstore(splits: List) -> Chroma:
+def create_vectorstore(splits: List, model: str) -> Chroma:
     """Create and populate vector store"""
-    embeddings = OllamaEmbeddings(model="llama3")  # You can use other models too
+    embeddings = OllamaEmbeddings(model=model)  # You can use other models too
     vectorstore = Chroma.from_documents(
         documents=splits,
         embedding=embeddings,
@@ -54,7 +55,7 @@ def create_vectorstore(splits: List) -> Chroma:
     print("\nCreated vector store with Ollama embeddings")
     return vectorstore
 
-def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
+def setup_rag_chain(vectorstore: Chroma, model: str) -> RunnablePassthrough:
     """Set up the RAG chain for querying"""
     # Initialize retriever
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
@@ -63,7 +64,7 @@ def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
     prompt = hub.pull("rlm/rag-prompt")
 
     # Initialize Ollama LLM
-    llm = Ollama(model="llama3")  # You can use other models like "mistral" or "gemma"
+    llm = Ollama(model=model)  # You can use other models like "mistral" or "gemma"
 
     # Create the RAG chain
     rag_chain = (
@@ -77,7 +78,11 @@ def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
 
 def main():
     """Main application loop"""
-    print("Web Page Content Loader")
+    parser = argparse.ArgumentParser(description="Web Page Content Loader with RAG")
+    parser.add_argument("--model", default="llama3", help="Ollama model to use (default: llama3)")
+    args = parser.parse_args()
+    
+    print(f"Web Page Content Loader using {args.model} model")
     vectorstore = None
     rag_chain = None
     
@@ -92,8 +97,8 @@ def main():
             documents = load_webpage(url)
             if documents:
                 splits = split_documents(documents)
-                vectorstore = create_vectorstore(splits)
-                rag_chain = setup_rag_chain(vectorstore)
+                vectorstore = create_vectorstore(splits, args.model)
+                rag_chain = setup_rag_chain(vectorstore, args.model)
                 print("\nReady for questions! (Type 'new' for a new webpage or 'quit' to exit)")
         else:
             question = input("\nEnter your question: ").strip()
