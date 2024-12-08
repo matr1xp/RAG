@@ -7,6 +7,9 @@ import streamlit as st
 from rag_app import load_webpage, split_documents, create_vectorstore, setup_rag_chain
 
 def main():
+    if 'current_model' not in st.session_state:
+        st.session_state.current_model = "llama3"
+
     # Set page config and custom CSS
     st.set_page_config(
         page_title="Web Page Content Query System",
