@@ -45,7 +45,7 @@ def split_documents(documents: List) -> List:
 
 def create_vectorstore(splits: List) -> Chroma:
     """Create and populate vector store"""
-    embeddings = OllamaEmbeddings(model="llama3.1")  # You can use other models too
+    embeddings = OllamaEmbeddings(model="llama3")  # You can use other models too
     vectorstore = Chroma.from_documents(
         documents=splits,
         embedding=embeddings,
@@ -63,7 +63,7 @@ def setup_rag_chain(vectorstore: Chroma) -> RunnablePassthrough:
     prompt = hub.pull("rlm/rag-prompt")
 
     # Initialize Ollama LLM
-    llm = Ollama(model="llama3.1")  # You can use other models like "mistral" or "gemma"
+    llm = Ollama(model="llama3")  # You can use other models like "mistral" or "gemma"
 
     # Create the RAG chain
     rag_chain = (
