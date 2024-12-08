@@ -39,6 +39,18 @@ def main():
         help="Choose the Ollama model to use for embeddings and generation",
         disabled=disabled
     )
+
+    # Check if model has changed
+    if model != st.session_state.current_model:
+        # Clear the current state and Chroma DB
+        if os.path.exists("./chroma_db"):
+            import shutil
+            shutil.rmtree("./chroma_db")
+        st.session_state.vectorstore = None
+        st.session_state.rag_chain = None
+        st.session_state.current_url = ""
+        st.session_state.current_model = model
+        st.rerun()
     
     # Custom CSS for styling
     st.markdown("""
