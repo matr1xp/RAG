@@ -15,11 +15,18 @@ def main():
     
     # Add model selection in sidebar
     st.sidebar.title("Model Settings")
+    
+    # Disable model selection if webpage is loaded
+    disabled = st.session_state.vectorstore is not None
+    if disabled:
+        st.sidebar.info("Model selection is disabled while a webpage is loaded. Clear the current webpage to change models.")
+    
     model = st.sidebar.selectbox(
         "Select Ollama Model",
         ["llama2", "mistral", "gemma", "llama3"],
         index=3,  # Default to llama3
-        help="Choose the Ollama model to use for embeddings and generation"
+        help="Choose the Ollama model to use for embeddings and generation",
+        disabled=disabled
     )
     
     # Custom CSS for styling
