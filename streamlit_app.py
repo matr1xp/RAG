@@ -7,6 +7,13 @@ import streamlit as st
 from rag_app import load_webpage, split_documents, create_vectorstore, setup_rag_chain
 
 def main():
+    # Initialize all session state variables first
+    if 'vectorstore' not in st.session_state:
+        st.session_state.vectorstore = None
+    if 'rag_chain' not in st.session_state:
+        st.session_state.rag_chain = None
+    if 'current_url' not in st.session_state:
+        st.session_state.current_url = ""
     if 'current_model' not in st.session_state:
         st.session_state.current_model = "llama3"
 
@@ -67,13 +74,6 @@ def main():
         </div>
     """, unsafe_allow_html=True)
 
-    # Initialize session state
-    if 'vectorstore' not in st.session_state:
-        st.session_state.vectorstore = None
-    if 'rag_chain' not in st.session_state:
-        st.session_state.rag_chain = None
-    if 'current_url' not in st.session_state:
-        st.session_state.current_url = ""
 
     # URL input section
     url = st.text_input("Enter webpage URL:", key="url_input")
