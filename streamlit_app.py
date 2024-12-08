@@ -13,6 +13,15 @@ def main():
         page_icon="🔍",
     )
     
+    # Add model selection in sidebar
+    st.sidebar.title("Model Settings")
+    model = st.sidebar.selectbox(
+        "Select Ollama Model",
+        ["llama2", "mistral", "gemma", "llama3"],
+        index=3,  # Default to llama3
+        help="Choose the Ollama model to use for embeddings and generation"
+    )
+    
     # Custom CSS for styling
     st.markdown("""
         <style>
@@ -65,8 +74,8 @@ def main():
                 documents = load_webpage(url)
                 if documents:
                     splits = split_documents(documents)
-                    st.session_state.vectorstore = create_vectorstore(splits)
-                    st.session_state.rag_chain = setup_rag_chain(st.session_state.vectorstore)
+                    st.session_state.vectorstore = create_vectorstore(splits, model)
+                    st.session_state.rag_chain = setup_rag_chain(st.session_state.vectorstore, model)
                     st.session_state.current_url = url
                     st.markdown("<div class='success-message'>Webpage loaded successfully! ✅</div>", unsafe_allow_html=True)
                 else:
