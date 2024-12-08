@@ -78,7 +78,7 @@ def main():
     # URL input section
     url = st.text_input("Enter webpage URL:", key="url_input")
     
-    if url and url != st.session_state.current_url:
+    if url and (url != st.session_state.current_url or model != st.session_state.current_model):
         if st.button("Load Webpage"):
             with st.spinner("Loading webpage..."):
                 documents = load_webpage(url)
@@ -87,6 +87,7 @@ def main():
                     st.session_state.vectorstore = create_vectorstore(splits, model)
                     st.session_state.rag_chain = setup_rag_chain(st.session_state.vectorstore, model)
                     st.session_state.current_url = url
+                    st.session_state.current_model = model
                     st.markdown("<div class='success-message'>Webpage loaded successfully! ✅</div>", unsafe_allow_html=True)
                 else:
                     st.markdown("<div class='error-message'>Failed to load webpage ❌</div>", unsafe_allow_html=True)
