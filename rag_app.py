@@ -46,16 +46,25 @@ def split_documents(documents: List) -> List:
 
 def create_vectorstore(splits: List, model: str) -> Chroma:
     """Create and populate vector store"""
-    # Clear existing database to prevent dimension mismatch
-    if os.path.exists("./chroma_db"):
-        import shutil
-        shutil.rmtree("./chroma_db")
+    from chromadb.config import Settings
+    from chromadb.utils import embedding_functions
     
     embeddings = OllamaEmbeddings(model=model)
+    
+    # Configure Chroma settings
+    chroma_settings = Settings(
+        anonymized_telemetry=False,
+        allow_reset=True,
+        is_persistent=True
+    )
+    
+    # Create vectorstore with configured settings
     vectorstore = Chroma.from_documents(
         documents=splits,
         embedding=embeddings,
-        persist_directory="./chroma_db"
+        persist_directory="./chroma_db",
+        collection_name=f"webpage_collection_{model}",
+        client_settings=chroma_settings
     )
     print("\nCreated vector store with Ollama embeddings")
     return vectorstore

@@ -3,6 +3,7 @@
 Streamlit UI for the RAG application
 """
 
+import os
 import streamlit as st
 from rag_app import load_webpage, split_documents, create_vectorstore, setup_rag_chain
 
