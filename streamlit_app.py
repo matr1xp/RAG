@@ -8,6 +8,33 @@ import streamlit as st
 from rag_app import load_webpage, split_documents, create_vectorstore, setup_rag_chain
 
 def main():
+    """
+    Main function for the Web Page Content Query System Streamlit application.
+    This function initializes and runs the main web interface for querying webpage content
+    using RAG (Retrieval Augmented Generation). It handles:
+    - Session state management for vectorstore, RAG chain, URL tracking, and model selection
+    - UI setup including page configuration and custom styling
+    - Model selection interface with proper state management
+    - URL input and webpage content loading
+    - Question/answer interface for loaded webpage content
+    - State clearing functionality
+    The interface includes:
+    - Sidebar with model selection (llama2, mistral, gemma, llama3)
+    - URL input field for loading webpage content
+    - Question input field for querying loaded content
+    - Clear button for resetting application state
+    Session State Variables:
+        vectorstore: Chroma vectorstore instance for document embeddings
+        rag_chain: RAG chain instance for question answering
+        current_url: Currently loaded webpage URL
+        current_model: Currently selected Ollama model
+    Returns:
+        None
+    Dependencies:
+        streamlit
+        chromadb
+        os
+    """
     # Initialize all session state variables first
     if 'vectorstore' not in st.session_state:
         st.session_state.vectorstore = None
