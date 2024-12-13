@@ -1,6 +1,8 @@
 # Web Page Content Query System
 
-A RAG (Retrieval-Augmented Generation) application that allows users to query web page content using natural language. The system features both a command-line interface and a user-friendly Streamlit web interface.
+## Project Summary
+
+The Web Page Content Query System is an advanced application designed to facilitate the retrieval and querying of web page content using natural language. Leveraging state-of-the-art technologies such as LangChain, Ollama, and Chroma, this system provides both a command-line interface and an interactive Streamlit web interface. Users can load web pages, process their content, and ask questions to receive AI-generated answers. The system is built to handle complex queries efficiently, making it a powerful tool for information retrieval and analysis.
 
 ## Features
 
