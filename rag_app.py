@@ -19,7 +19,19 @@ from langchain_community.llms import Ollama
 
 
 def load_webpage(url: str) -> List:
-    """Load and parse webpage content"""
+    """
+    Load and parse webpage content.
+
+    Args:
+        url (str): The URL of the webpage to load.
+
+    Returns:
+        List: A list of documents containing the parsed webpage content. 
+              Returns an empty list if an error occurs.
+
+    Raises:
+        Exception: If there is an error loading the webpage.
+    """
     try:
         loader = WebBaseLoader(url)
         documents = loader.load()
@@ -34,7 +46,23 @@ def load_webpage(url: str) -> List:
         return []
 
 def split_documents(documents: List) -> List:
-    """Split documents into chunks"""
+    """
+    Split documents into smaller chunks.
+
+    This function takes a list of documents and splits each document into smaller chunks
+    using the RecursiveCharacterTextSplitter. The chunks are created based on the specified
+    chunk size and overlap.
+
+    Args:
+        documents (List): A list of documents to be split.
+
+    Returns:
+        List: A list of document chunks.
+
+    Example:
+        documents = ["This is a long document...", "Another long document..."]
+        chunks = split_documents(documents)
+    """
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200,
@@ -45,7 +73,14 @@ def split_documents(documents: List) -> List:
     return splits
 
 def create_vectorstore(splits: List, model: str) -> Chroma:
-    """Create and populate vector store"""
+    """
+    Create and populate a vector store using Chroma and Ollama embeddings.
+    Args:
+        splits (List): A list of document splits to be embedded and stored.
+        model (str): The name of the model to be used for generating embeddings.
+    Returns:
+        Chroma: An instance of the Chroma vector store populated with the provided documents.
+    """
     from chromadb.config import Settings
     import chromadb
     
@@ -83,7 +118,16 @@ def create_vectorstore(splits: List, model: str) -> Chroma:
     return vectorstore
 
 def setup_rag_chain(vectorstore: Chroma, model: str) -> RunnablePassthrough:
-    """Set up the RAG chain for querying"""
+    """
+    Set up the RAG (Retrieval-Augmented Generation) chain for querying.
+    This function initializes a retriever from the provided vectorstore, pulls the default RAG prompt,
+    initializes an Ollama LLM with the specified model, and creates a RAG chain for querying.
+    Args:
+        vectorstore (Chroma): The vector store to use for retrieval.
+        model (str): The model name to use for the Ollama LLM. Examples include "mistral" or "gemma".
+    Returns:
+        RunnablePassthrough: The configured RAG chain ready for querying.
+    """
     # Initialize retriever
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
     
@@ -104,7 +148,26 @@ def setup_rag_chain(vectorstore: Chroma, model: str) -> RunnablePassthrough:
     return rag_chain
 
 def main():
-    """Main application loop"""
+    """Main application loop.
+    This function runs the main application loop for a RAG (Retrieval-Augmented Generation) system
+    that processes web page content and answers questions about it.
+    The application flow:
+    1. Takes a model name as command line argument (defaults to "llama3")
+    2. Prompts user for a webpage URL
+    3. Loads and processes the webpage content
+    4. Accepts questions about the webpage content
+    5. Provides AI-generated answers using the specified model
+    6. Allows switching to a new webpage or quitting the application
+    Command line arguments:
+        --model: Ollama model to use (default: "llama3")
+    User commands:
+        'quit': Exits the application
+        'new': Loads a new webpage
+    Returns:
+        None
+    Raises:
+        Various exceptions may be raised during webpage loading or answer generation
+    """
     parser = argparse.ArgumentParser(description="Web Page Content Loader with RAG")
     parser.add_argument("--model", default="llama3", help="Ollama model to use (default: llama3)")
     args = parser.parse_args()
